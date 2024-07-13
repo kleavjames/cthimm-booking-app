@@ -36,7 +36,7 @@ export const Seat: FC<SeatProps> = ({
         isSeatTakenForPremiere && "border-green-600 bg-green-600",
         isSeatReserved && "border-orange-400 bg-orange-400",
         isSeatSelected && "border-orange-100",
-        notIncluded && "bg-gray-400 border-gray-400"
+        notIncluded && "bg-gray-600 border-gray-600"
       )}
     >
       <p

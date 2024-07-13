@@ -43,3 +43,9 @@ export const rows = [
   "AI",
   "AJ",
 ];
+
+export const price = {
+  vip: 500,
+  premier: 400,
+  deluxe: 300,
+};

@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Seat } from "./components/Seat";
-import { rows, seatNumbers } from "./constants/seats";
+import { price, rows, seatNumbers } from "./constants/seats";
 import { Label } from "./components/Label";
+import { numberWithCommas, splitStringAndNumbers } from "./utils/strings";
 
 const notIncluded = [
   "R39",
@@ -28,6 +29,34 @@ const notIncluded = [
 
 function App() {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [vipCount, setVipCount] = useState(0);
+  const [premiereCount, setPremiereCount] = useState(0);
+
+  const onHandleCounts = (seat: string, op: "add" | "subtract") => {
+    const { letters } = splitStringAndNumbers(seat);
+    const letter = letters[0] as string;
+
+    if (
+      typeof letter === "string" &&
+      letter.length === 1 &&
+      /^[A-Z]$/.test(letter)
+    ) {
+      const charCode = letter?.charCodeAt(0);
+      if (charCode >= "A".charCodeAt(0) && charCode <= "Q".charCodeAt(0)) {
+        op === "add"
+          ? setVipCount((prev) => prev + 1)
+          : setVipCount((prev) => prev - 1);
+      } else {
+        op === "add"
+          ? setPremiereCount((prev) => prev + 1)
+          : setPremiereCount((prev) => prev - 1);
+      }
+    } else {
+      op === "add"
+        ? setPremiereCount((prev) => prev + 1)
+        : setPremiereCount((prev) => prev - 1);
+    }
+  };
 
   const onSelectSeat = (seat: string) => {
     const foundSeat = selectedSeats.find(
@@ -35,12 +64,14 @@ function App() {
     );
     // not selected yet
     if (!foundSeat) {
+      onHandleCounts(seat, "add");
       setSelectedSeats((prevState) => [...prevState, seat]);
     } else {
       const selectedSeatCopy = [...selectedSeats];
       const filteredSeats = selectedSeatCopy.filter(
         (seat) => seat !== foundSeat
       );
+      onHandleCounts(seat, "subtract");
       setSelectedSeats([...filteredSeats]);
     }
   };
@@ -63,6 +94,33 @@ function App() {
     },
     [selectedSeats]
   );
+
+  // display in booking details
+  const seatsSelected = useMemo(() => {
+    return selectedSeats.join(", ");
+  }, [selectedSeats]);
+
+  // display in booking details
+  const breakDownText = useMemo(() => {
+    let text = "";
+    if (vipCount > 0) {
+      text += `${vipCount} VIP${vipCount <= 1 ? "" : "s"}`;
+    }
+    if (premiereCount > 0) {
+      text +=
+        vipCount !== 0
+          ? `, ${premiereCount} Premier${premiereCount <= 1 ? "" : "s"}`
+          : `${premiereCount} Premier${premiereCount <= 1 ? "" : "s"}`;
+    }
+    return text;
+  }, [vipCount, premiereCount]);
+
+  const totalAmount = useMemo(() => {
+    const { vip, premier } = price;
+    const total = vip * vipCount + premier * premiereCount;
+
+    return `₱ ${numberWithCommas(total)}.00`;
+  }, [vipCount, premiereCount]);
 
   return (
     <div className="flex flex-col">
@@ -167,21 +225,29 @@ function App() {
       </div>
       <div className="container mx-auto my-10">
         <div>
-          <p>Ticket Details</p>
+          <p className="text-lg font-bold">Booking Details</p>
           <div className="divider"></div>
-          <div className="flex border border-gray-600 rounded-lg p-4 w-3/4 mx-auto">
-            <div className="flex-1 flex flex-col gap-3">
-              <Label label="Conference" values="This is the beginning" />
+          <div className="flex flex-row gap-10">
+            <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">
+              <Label label="Name" values="CTHIMM Conference" />
               <Label label="Venue" values="USEP Gymnasium" />
               <Label
                 label="Date & Time"
-                values="Sunday - July 12, 2025 - 6:00PM"
+                values="September 23, 2025 - 6:00PM (Sunday)"
               />
             </div>
-            <div className="flex-1 flex flex-col gap-3">
-              <Label label="Seats" values="C1, C5, D4" />
-              <Label label="Tickets" values="2 VIPs, 3 Premieres" />
-              <Label label="Total" values="1,050" />
+            <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">
+              <Label
+                label="Seats"
+                values={seatsSelected}
+                placeholder="Please select a set"
+              />
+              <Label
+                label="Tickets x Quantities"
+                values={breakDownText}
+                placeholder="No tickets selected"
+              />
+              <Label label="Total Amount" values={totalAmount} />
             </div>
           </div>
         </div>
