@@ -44,6 +44,29 @@ export const rows = [
   "AJ",
 ];
 
+export const notIncluded = [
+  "R39",
+  "R40",
+  "R41",
+  "R42",
+  "S39",
+  "S40",
+  "S41",
+  "S42",
+  "T39",
+  "T40",
+  "T41",
+  "T42",
+  "U39",
+  "U40",
+  "U41",
+  "U42",
+  "V39",
+  "V40",
+  "V41",
+  "V42",
+];
+
 export const price = {
   vip: 500,
   premier: 400,
