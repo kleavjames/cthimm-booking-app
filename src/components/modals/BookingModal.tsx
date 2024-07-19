@@ -1,23 +1,104 @@
-import { FC } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "../Label";
-import { networks } from "../../constants/networks";
+import { FC, useState } from "react";
+import { Label as FormLabel } from "@/components/ui/label";
+import { NetworkSelect } from "../NetworkSelect";
+import { price, SeatCategoryEnum, SeatStatusEnum } from "@/constants/seats";
+import { splitStringAndNumbers } from "@/utils/strings";
+import supabase from "@/config/supabase";
 
 type BookingModalProps = {
   seats: string;
   breakDown: string;
-  total: string;
+  totalDisplay: string;
 };
 
 export const BookingModal: FC<BookingModalProps> = ({
   seats,
   breakDown,
-  total,
+  totalDisplay,
 }) => {
+  const [fullName, setFullName] = useState("");
+  const [network, setNetwork] = useState("");
+  const [mobile, setMobile] = useState("");
+
+  const onSubmitBooking = async () => {
+    const seating = seats.split(",").map((seat) => seat.trim());
+
+    const getSeatCategory = (seat: string) => {
+      const { letters } = splitStringAndNumbers(seat);
+      const letter = letters[0] as string;
+
+      if (
+        typeof letter === "string" &&
+        letter.length === 1 &&
+        /^[A-Z]$/.test(letter)
+      ) {
+        const charCode = letter?.charCodeAt(0);
+        return charCode >= "A".charCodeAt(0) && charCode <= "Q".charCodeAt(0)
+          ? SeatCategoryEnum.VIP
+          : SeatCategoryEnum.PREMIERE;
+      }
+
+      return SeatCategoryEnum.PREMIERE;
+    };
+
+    const bookingDetails = seating.map((seat) => {
+      return {
+        seat,
+        seat_category: getSeatCategory(seat),
+        seat_status: SeatStatusEnum.PENDING,
+        fullname: fullName,
+        mobile,
+        network,
+        amount:
+          getSeatCategory(seat) === SeatCategoryEnum.VIP
+            ? price.vip
+            : price.premier,
+      };
+    });
+
+    const { data } = await supabase
+      .from("bookings")
+      .insert(bookingDetails)
+      .select();
+    if (data) {
+      setFullName("");
+      setMobile("");
+      setNetwork("");
+    }
+  };
+
   return (
-    <dialog id="process_booking" className="modal">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">Booking details</h3>
-        <div className="my-10 flex gap-5 flex-col">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          disabled={seats.length === 0}
+          variant="default"
+          className="px-10"
+        >
+          Process Booking
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Booking Details</DialogTitle>
+          <DialogDescription>
+            Check booking details before proceeding
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-7 py-4">
           <div className="flex flex-row gap-5">
             <div className="flex-1">
               <Label label="Seats Selected" values={seats} />
@@ -30,45 +111,43 @@ export const BookingModal: FC<BookingModalProps> = ({
               />
             </div>
           </div>
-          <Label label="Total Amount" values={total} />
-          <label className="form-control w-full max-w-full">
-            <div className="label">
-              <span className="label-text">Full name</span>
+          <Label label="Total Amount" values={totalDisplay} />
+
+          <div className="flex flex-col gap-5">
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <FormLabel htmlFor="fullName">Full name</FormLabel>
+              <Input
+                type="text"
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Full name of the booker"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Name of the one who booked"
-              className="input input-bordered w-full max-w-full"
-            />
-          </label>
-          <label className="form-control w-full max-w-full">
-            <div className="label">
-              <span className="label-text">Network or Church</span>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <FormLabel htmlFor="fullName">Network</FormLabel>
+              <NetworkSelect value={network} onChange={setNetwork} />
             </div>
-            <select className="select select-bordered">
-              <option selected disabled>
-                Pick one
-              </option>
-              {networks.map((network) => (
-                <option
-                  onClick={() => alert(network.name)}
-                  key={network.id}
-                  disabled={network.id >= 900}
-                >
-                  {network.name}
-                </option>
-              ))}
-            </select>
-          </label>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <FormLabel htmlFor="mobile">Mobile #</FormLabel>
+              <Input
+                type="text"
+                id="mobile"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="Mobile number"
+              />
+            </div>
+          </div>
         </div>
-        <div className="modal-action">
-          <form method="dialog" className="flex gap-5">
-            {/* if there is a button in form, it will close the modal */}
-            <button className="btn btn-ghost">Back</button>
-            <button className="btn btn-primary">Submit</button>
-          </form>
-        </div>
-      </div>
-    </dialog>
+        <DialogFooter>
+          <DialogClose asChild disabled={!fullName || !network || !mobile}>
+            <Button type="submit" onClick={onSubmitBooking}>
+              Submit
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

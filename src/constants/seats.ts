@@ -45,10 +45,6 @@ export const rows = [
 ];
 
 export const notIncluded = [
-  "A1",
-  "A2",
-  "A3",
-  "A4",
   "A5",
   "A6",
   "A7",
@@ -83,14 +79,6 @@ export const notIncluded = [
   "A36",
   "A37",
   "A38",
-  "A39",
-  "A40",
-  "A41",
-  "A42",
-  "B1",
-  "B2",
-  "B3",
-  "B4",
   "B5",
   "B6",
   "B7",
@@ -125,10 +113,6 @@ export const notIncluded = [
   "B36",
   "B37",
   "B38",
-  "B39",
-  "B40",
-  "B41",
-  "B42",
   "R39",
   "R40",
   "R41",
@@ -156,3 +140,16 @@ export const price = {
   premier: 400,
   deluxe: 300,
 };
+
+export enum SeatStatusEnum {
+  PENDING = "pending",
+  RESERVED = "reserved",
+  TAKEN = "taken",
+  AVAILABLE = "available",
+}
+
+export enum SeatCategoryEnum {
+  PREMIERE = "premiere",
+  VIP = "vip",
+  DELUXE = "deluxe",
+}

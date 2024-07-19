@@ -3,7 +3,7 @@ import { numberWithCommas, splitStringAndNumbers } from "../utils/strings";
 import { notIncluded, price, rows, seatNumbers } from "../constants/seats";
 import { Seat } from "../components/Seat";
 import { Label } from "../components/Label";
-import { BookingModal } from "../components/modals/BookingModal";
+import { BookingModal } from "@/components/modals/BookingModal";
 
 type BookingProps = {
   //
@@ -101,7 +101,10 @@ const Booking: FC<BookingProps> = () => {
     const { vip, premier } = price;
     const total = vip * vipCount + premier * premiereCount;
 
-    return `₱ ${numberWithCommas(total)}.00`;
+    return {
+      display: `₱ ${numberWithCommas(total)}.00`,
+      value: total,
+    };
   }, [vipCount, premiereCount]);
 
   return (
@@ -142,7 +145,7 @@ const Booking: FC<BookingProps> = () => {
           <div className="max-w-full h-[750px] overflow-scroll">
             <div className="flex flex-col gap-2 m-2">
               {rows.map((row) => (
-                <div className="flex flex-row gap-10">
+                <div key={row} className="flex flex-row gap-10">
                   <div className="flex flex-row gap-2">
                     <p className="w-10">{row}</p>
                     {seatNumbers[0].map((seatNum) => {
@@ -211,18 +214,16 @@ const Booking: FC<BookingProps> = () => {
           </div>
         </div>
         <div className="container mx-auto my-10">
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center mb-5">
             <p className="text-lg font-bold">Booking Details</p>
-            <button
-              className="btn btn-primary px-10"
-              disabled={seatsSelected.length === 0}
-              onClick={() => {
-                // eslint-disable-next-line
-                (document.getElementById("process_booking") as any).showModal();
-              }}
-            >
+            <BookingModal
+              seats={seatsSelected}
+              breakDown={breakDownText}
+              totalDisplay={totalAmount.display}
+            />
+            {/* <Button disabled={seatsSelected.length === 0} className="px-10">
               Proceed booking
-            </button>
+            </Button> */}
           </div>
           <div className="divider"></div>
           <div className="flex flex-row gap-10">
@@ -245,16 +246,11 @@ const Booking: FC<BookingProps> = () => {
                 values={breakDownText}
                 placeholder="No tickets selected"
               />
-              <Label label="Total Amount" values={totalAmount} />
+              <Label label="Total Amount" values={totalAmount.display} />
             </div>
           </div>
         </div>
       </div>
-      <BookingModal
-        seats={seatsSelected}
-        breakDown={breakDownText}
-        total={totalAmount}
-      />
     </>
   );
 };
