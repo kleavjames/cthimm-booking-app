@@ -1,9 +1,5 @@
 export const networks = [
   {
-    id: 900,
-    name: "Networks",
-  },
-  {
     id: 3,
     name: "Ps. Rowena Donato",
   },
@@ -28,7 +24,7 @@ export const networks = [
     name: "Ps. Duane Jeff Gencianos",
   },
   {
-    id: 8,
+    id: 26,
     name: "Ps. Felochie Gencianos",
   },
   {
@@ -99,18 +95,16 @@ export const networks = [
     id: 25,
     name: "Ps. Rhodora Barcena",
   },
-  {
-    id: 901,
-    name: "Luzon",
-  },
+];
+
+export const luzonChurches = [
   {
     id: 26,
     name: "Quezon City",
   },
-  {
-    id: 902,
-    name: "Visayas",
-  },
+];
+
+export const visayasChurches = [
   {
     id: 27,
     name: "Concolacion Cebu",
@@ -151,10 +145,9 @@ export const networks = [
     id: 36,
     name: "Escalante Negros",
   },
-  {
-    id: 902,
-    name: "Mindanao",
-  },
+];
+
+export const mindanaoChurches = [
   {
     id: 37,
     name: "General Santos",
