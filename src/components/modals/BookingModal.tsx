@@ -58,7 +58,7 @@ export const BookingModal: FC<BookingModalProps> = ({
       return {
         seat,
         seat_category: getSeatCategory(seat),
-        seat_status: SeatStatusEnum.PENDING,
+        seat_status: SeatStatusEnum.RESERVED,
         fullname: fullName,
         mobile,
         network,

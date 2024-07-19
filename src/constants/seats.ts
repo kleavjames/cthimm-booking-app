@@ -145,6 +145,7 @@ export enum SeatStatusEnum {
   PENDING = "pending",
   RESERVED = "reserved",
   TAKEN = "taken",
+  SELECTED = "selected",
   AVAILABLE = "available",
 }
 

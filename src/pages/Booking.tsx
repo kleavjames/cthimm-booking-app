@@ -1,9 +1,18 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { numberWithCommas, splitStringAndNumbers } from "../utils/strings";
-import { notIncluded, price, rows, seatNumbers } from "../constants/seats";
+import {
+  notIncluded,
+  price,
+  rows,
+  SeatCategoryEnum,
+  seatNumbers,
+  SeatStatusEnum,
+} from "../constants/seats";
 import { Seat } from "../components/Seat";
 import { Label } from "../components/Label";
 import { BookingModal } from "@/components/modals/BookingModal";
+import supabase from "@/config/supabase";
+import { Bookings } from "@/types/bookings";
 
 type BookingProps = {
   //
@@ -13,6 +22,45 @@ const Booking: FC<BookingProps> = () => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [vipCount, setVipCount] = useState(0);
   const [premiereCount, setPremiereCount] = useState(0);
+  const [bookings, setBookings] = useState<Bookings[]>([]);
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  useEffect(() => {
+    const bookingListener = supabase
+      .channel("custom-insert-channel")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "bookings" },
+        ({ errors, new: booking }) => {
+          if (!errors) {
+            setBookings((prev) => [...prev, booking as Bookings]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      bookingListener.unsubscribe();
+    };
+  }, []);
+
+  const fetchBookings = async () => {
+    const { data: bookings, error } = await supabase
+      .from("bookings")
+      .select("*");
+
+    if (error) {
+      console.error("Error fetching bookings", error);
+      return;
+    }
+
+    if (bookings) {
+      setBookings(bookings);
+    }
+  };
 
   const onHandleCounts = (seat: string, op: "add" | "subtract") => {
     const { letters } = splitStringAndNumbers(seat);
@@ -70,11 +118,18 @@ const Booking: FC<BookingProps> = () => {
     return false;
   };
 
-  const seatState = useCallback(
+  const getSeatStatus = useCallback(
     (seat: string) => {
-      return selectedSeats.includes(seat) ? "selected" : "available";
+      const booking = bookings.find((booking) => booking.seat === seat);
+      if (booking) {
+        return booking.seat_status as SeatStatusEnum;
+      } else {
+        return selectedSeats.includes(seat)
+          ? SeatStatusEnum.SELECTED
+          : SeatStatusEnum.AVAILABLE;
+      }
     },
-    [selectedSeats]
+    [bookings, selectedSeats]
   );
 
   // display in booking details
@@ -117,27 +172,43 @@ const Booking: FC<BookingProps> = () => {
         </div>
         <div className="flex flex-row justify-center items-center gap-5 mb-5">
           <div className="flex flex-row items-center gap-2">
-            <Seat seatState="available" seatTyle="vip" onPress={() => {}} />
+            <Seat
+              seatCategory={SeatCategoryEnum.VIP}
+              seatStatus={SeatStatusEnum.AVAILABLE}
+              onPress={() => {}}
+            />
             <p>VIP Available</p>
           </div>
           <div className="flex flex-row items-center gap-2">
-            <Seat seatState="taken" seatTyle="vip" onPress={() => {}} />
+            <Seat
+              seatCategory={SeatCategoryEnum.VIP}
+              seatStatus={SeatStatusEnum.TAKEN}
+              onPress={() => {}}
+            />
             <p>VIP Taken</p>
           </div>
           <div className="flex flex-row items-center gap-2">
             <Seat
-              seatState="available"
-              seatTyle="premiere"
+              seatStatus={SeatStatusEnum.AVAILABLE}
+              seatCategory={SeatCategoryEnum.PREMIERE}
               onPress={() => {}}
             />
             <p>Premiere Available</p>
           </div>
           <div className="flex flex-row items-center gap-2">
-            <Seat seatState="taken" seatTyle="premiere" onPress={() => {}} />
+            <Seat
+              seatStatus={SeatStatusEnum.TAKEN}
+              seatCategory={SeatCategoryEnum.PREMIERE}
+              onPress={() => {}}
+            />
             <p>Premiere Taken</p>
           </div>
           <div className="flex flex-row items-center gap-2">
-            <Seat seatState="reserved" seatTyle="vip" onPress={() => {}} />
+            <Seat
+              seatCategory={SeatCategoryEnum.VIP}
+              seatStatus={SeatStatusEnum.RESERVED}
+              onPress={() => {}}
+            />
             <p>Reserved</p>
           </div>
         </div>
@@ -154,8 +225,12 @@ const Booking: FC<BookingProps> = () => {
                         <Seat
                           key={seatNum}
                           seatNum={seatNum}
-                          seatState={seatState(seatName)}
-                          seatTyle={handleSeatType(row) ? "vip" : "premiere"}
+                          seatStatus={getSeatStatus(seatName)}
+                          seatCategory={
+                            handleSeatType(row)
+                              ? SeatCategoryEnum.VIP
+                              : SeatCategoryEnum.PREMIERE
+                          }
                           notIncluded={notIncluded.includes(seatName)}
                           onPress={() => onSelectSeat(seatName)}
                         />
@@ -169,8 +244,12 @@ const Booking: FC<BookingProps> = () => {
                         <Seat
                           key={seatNum}
                           seatNum={seatNum}
-                          seatState={seatState(seatName)}
-                          seatTyle={handleSeatType(row) ? "vip" : "premiere"}
+                          seatStatus={getSeatStatus(seatName)}
+                          seatCategory={
+                            handleSeatType(row)
+                              ? SeatCategoryEnum.VIP
+                              : SeatCategoryEnum.PREMIERE
+                          }
                           notIncluded={notIncluded.includes(seatName)}
                           onPress={() => onSelectSeat(seatName)}
                         />
@@ -184,8 +263,12 @@ const Booking: FC<BookingProps> = () => {
                         <Seat
                           key={seatNum}
                           seatNum={seatNum}
-                          seatState={seatState(seatName)}
-                          seatTyle={handleSeatType(row) ? "vip" : "premiere"}
+                          seatStatus={getSeatStatus(seatName)}
+                          seatCategory={
+                            handleSeatType(row)
+                              ? SeatCategoryEnum.VIP
+                              : SeatCategoryEnum.PREMIERE
+                          }
                           notIncluded={notIncluded.includes(seatName)}
                           onPress={() => onSelectSeat(seatName)}
                         />
@@ -199,8 +282,12 @@ const Booking: FC<BookingProps> = () => {
                         <Seat
                           key={seatNum}
                           seatNum={seatNum}
-                          seatState={seatState(seatName)}
-                          seatTyle={handleSeatType(row) ? "vip" : "premiere"}
+                          seatStatus={getSeatStatus(seatName)}
+                          seatCategory={
+                            handleSeatType(row)
+                              ? SeatCategoryEnum.VIP
+                              : SeatCategoryEnum.PREMIERE
+                          }
                           notIncluded={notIncluded.includes(seatName)}
                           onPress={() => onSelectSeat(seatName)}
                         />

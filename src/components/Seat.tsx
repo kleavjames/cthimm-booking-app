@@ -1,33 +1,39 @@
+import { SeatCategoryEnum, SeatStatusEnum } from "@/constants/seats";
 import { FC } from "react";
 import { twMerge } from "tailwind-merge";
 
 type SeatProps = {
   seatNum?: number;
   onPress: () => void;
-  seatTyle: "vip" | "premiere";
-  seatState: "available" | "reserved" | "taken" | "selected";
+  seatStatus: SeatStatusEnum;
+  seatCategory: SeatCategoryEnum;
   notIncluded?: boolean;
 };
 
 export const Seat: FC<SeatProps> = ({
   seatNum,
-  seatState = "available",
+  seatCategory,
   onPress,
-  seatTyle,
+  seatStatus = "available",
   notIncluded = false,
 }) => {
-  const isSeatTaken = seatState === "taken";
-  const isSeatReserved = seatState === "reserved";
-  const isSeatSelected = seatState === "selected";
-  const isSeatAvailable = seatState === "available";
-  const isVIP = seatTyle === "vip" && isSeatAvailable;
-  const isSeatTakenForVIP = seatTyle === "vip" && isSeatTaken;
-  const isPremiere = seatTyle === "premiere" && isSeatAvailable;
-  const isSeatTakenForPremiere = seatTyle === "premiere" && isSeatTaken;
+  const isSeatTaken = seatStatus === SeatStatusEnum.TAKEN;
+  const isSeatReserved = seatStatus === SeatStatusEnum.RESERVED;
+  const isSeatSelected = seatStatus === SeatStatusEnum.SELECTED;
+  const isSeatAvailable = seatStatus === SeatStatusEnum.AVAILABLE;
+  const isVIP = seatCategory === SeatCategoryEnum.VIP && isSeatAvailable;
+  const isSeatTakenForVIP =
+    seatCategory === SeatCategoryEnum.VIP && isSeatTaken;
+  const isPremiere =
+    seatCategory === SeatCategoryEnum.PREMIERE && isSeatAvailable;
+  const isSeatTakenForPremiere =
+    seatCategory === SeatCategoryEnum.PREMIERE && isSeatTaken;
 
   return (
     <div
-      onClick={notIncluded ? undefined : onPress}
+      onClick={
+        notIncluded || isSeatReserved || isSeatTaken ? undefined : onPress
+      }
       className={twMerge(
         "w-7 h-7 border rounded-sm flex justify-center items-center cursor-pointer",
         isVIP && "border-blue-400",
@@ -42,9 +48,10 @@ export const Seat: FC<SeatProps> = ({
       <p
         className={twMerge(
           "text-xs",
-          seatState === "available" && "text-gray-800",
-          (seatState === "reserved" || seatState === "taken") && "text-white",
-          seatState === "selected" && "text-orange-100",
+          seatStatus === SeatStatusEnum.AVAILABLE && "text-gray-800",
+          (seatStatus === SeatStatusEnum.RESERVED || seatStatus === "taken") &&
+            "text-white",
+          seatStatus === SeatStatusEnum.SELECTED && "text-orange-100",
           notIncluded && "opacity-0"
         )}
       >
