@@ -50,7 +50,11 @@ export const BookingModal: FC<BookingModalProps> = ({
                 Pick one
               </option>
               {networks.map((network) => (
-                <option key={network.id} disabled={network.id >= 900}>
+                <option
+                  onClick={() => alert(network.name)}
+                  key={network.id}
+                  disabled={network.id >= 900}
+                >
                   {network.name}
                 </option>
               ))}
