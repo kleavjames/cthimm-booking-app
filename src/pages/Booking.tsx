@@ -13,6 +13,7 @@ import { Label } from "../components/Label";
 import { BookingModal } from "@/components/modals/BookingModal";
 import supabase from "@/config/supabase";
 import { Bookings } from "@/types/bookings";
+import { Header } from "@/components/Header";
 
 type BookingProps = {
   //
@@ -170,6 +171,7 @@ const Booking: FC<BookingProps> = () => {
 
   return (
     <>
+      <Header />
       <div className="flex flex-col">
         <div className="container mx-auto bg-gray-300 my-10">
           <p className="text-center text-lg text-black font-bold bold py-5">
