@@ -17,6 +17,10 @@ import { NetworkSelect } from "../NetworkSelect";
 import { price, SeatCategoryEnum, SeatStatusEnum } from "@/constants/seats";
 import { splitStringAndNumbers } from "@/utils/strings";
 import supabase from "@/config/supabase";
+import { saveAs } from "file-saver";
+import { pdf } from "@react-pdf/renderer";
+import { BookingReceipt } from "../BookingReceipt";
+import { Bookings } from "@/types/bookings";
 
 type BookingModalProps = {
   seats: string;
@@ -32,6 +36,11 @@ export const BookingModal: FC<BookingModalProps> = ({
   const [fullName, setFullName] = useState("");
   const [network, setNetwork] = useState("");
   const [mobile, setMobile] = useState("");
+
+  const generatePdfDocument = async (booking: Bookings[]) => {
+    const blob = await pdf(<BookingReceipt bookings={booking} />).toBlob();
+    saveAs(blob, `booking-receipt-${new Date().toISOString()}.pdf`);
+  };
 
   const onSubmitBooking = async () => {
     const seating = seats.split(",").map((seat) => seat.trim());
@@ -69,14 +78,21 @@ export const BookingModal: FC<BookingModalProps> = ({
       };
     });
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("bookings")
       .insert(bookingDetails)
       .select();
+
+    if (error) {
+      alert("Failed to process booking");
+    }
     if (data) {
+      // clear data
       setFullName("");
       setMobile("");
       setNetwork("");
+
+      generatePdfDocument(data);
     }
   };
 
