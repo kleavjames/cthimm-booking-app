@@ -8,4 +8,5 @@ export type Bookings = {
   mobile: string;
   network: string;
   amount: number;
+  cancellation_date: string;
 };

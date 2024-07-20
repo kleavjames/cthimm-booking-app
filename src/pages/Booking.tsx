@@ -319,11 +319,12 @@ const Booking: FC<BookingProps> = () => {
           <div className="divider"></div>
           <div className="flex flex-row gap-10">
             <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">
-              <Label label="Name" values="CTHIMM Conference" />
-              <Label label="Venue" values="USEP Gymnasium" />
+              <Label label="Name" values="Restore Philippines Conference" />
+              <Label label="Venue" values="USEP Dome" />
               <Label
                 label="Date & Time"
-                values="September 23, 2025 - 6:00PM (Sunday)"
+                values="(Day 1 - Sat) September 21, 2024 - 12:00nn to 6:00pm"
+                valuesTwo="(Day 2 - Sun) September 22, 2024 - 2:00pm to 4:00pm"
               />
             </div>
             <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">

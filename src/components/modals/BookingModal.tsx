@@ -66,6 +66,10 @@ export const BookingModal: FC<BookingModalProps> = ({
     };
 
     const bookingDetails = seating.map((seat) => {
+      // date now + 1 day for cancellation
+      const cancellation_date = new Date();
+      cancellation_date.setDate(cancellation_date.getDate() + 1);
+
       return {
         seat,
         seat_category: getSeatCategory(seat),
@@ -77,6 +81,7 @@ export const BookingModal: FC<BookingModalProps> = ({
           getSeatCategory(seat) === SeatCategoryEnum.VIP
             ? price.vip
             : price.premier,
+        cancellation_date,
       };
     });
 

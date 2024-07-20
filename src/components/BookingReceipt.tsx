@@ -88,7 +88,7 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
           </View>
           <View style={{ border: 0.5, marginTop: 10, marginBottom: 10 }}></View>
           <View style={{ display: "flex", gap: 10 }}>
-            {vipDetails && (
+            {vipDetails.qty > 0 && (
               <View
                 style={{
                   display: "flex",
@@ -112,7 +112,7 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
                 </Text>
               </View>
             )}
-            {premiereDetails && (
+            {premiereDetails.qty > 0 && (
               <View
                 style={{
                   display: "flex",
@@ -149,9 +149,9 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
               <Text style={{ fontSize: 12, flexBasis: 100 }}></Text>
               <Text style={{ fontSize: 12, flexBasis: 100 }}></Text>
               <Text style={{ fontSize: 12, flexBasis: 100 }}>Total</Text>
-              <Text
-                style={{ fontSize: 12, flexBasis: 100 }}
-              >{`Php ${numberWithCommas(totalAmount)}.00`}</Text>
+              <Text style={{ fontSize: 12, flexBasis: 100 }}>
+                {numberWithCommas(totalAmount)}.00
+              </Text>
             </View>
           </View>
         </View>
