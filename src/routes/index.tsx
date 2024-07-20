@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import Protected from "@/components/Protected";
 import MainLayout from "@/layout/MainLayout";
 import Booking from "@/pages/Booking";
 import Reservations from "@/pages/Reservations";
@@ -16,11 +17,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/reservations",
-        element: <Reservations />,
+        element: (
+          <Protected>
+            <Reservations />
+          </Protected>
+        ),
       },
       {
         path: "/statistics",
-        element: <Statistics />,
+        element: (
+          <Protected>
+            <Statistics />
+          </Protected>
+        ),
       },
     ],
   },

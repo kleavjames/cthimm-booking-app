@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import supabase from "@/config/supabase";
 import useAuthStore from "@/store/authStore";
+import { Link } from "react-router-dom";
 
 export const MainMenu = () => {
   const clearAuthUser = useAuthStore((state) => state.clearAuthUser);
@@ -56,14 +57,18 @@ export const MainMenu = () => {
         <DropdownMenuLabel>Dashboard</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <NotebookText className="mr-2 h-4 w-4" />
-            <span>Bookings</span>
+          <DropdownMenuItem asChild>
+            <Link to="/">
+              <NotebookText className="mr-2 h-4 w-4" />
+              <span>Bookings</span>
+            </Link>
             {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <NotebookPen className="mr-2 h-4 w-4" />
-            <span>Reservations</span>
+          <DropdownMenuItem asChild>
+            <Link to="/reservations">
+              <NotebookPen className="mr-2 h-4 w-4" />
+              <span>Reservations</span>
+            </Link>
             {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
           </DropdownMenuItem>
           {/* <DropdownMenuItem>
@@ -79,9 +84,11 @@ export const MainMenu = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BarChart3 className="mr-2 h-4 w-4" />
-            <span>Statistics</span>
+          <DropdownMenuItem asChild>
+            <Link to="/statistics">
+              <BarChart3 className="mr-2 h-4 w-4" />
+              <span>Statistics</span>
+            </Link>
           </DropdownMenuItem>
           {/* <DropdownMenuSub>
             <DropdownMenuSubTrigger>
