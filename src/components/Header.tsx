@@ -1,31 +1,16 @@
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
 import { LoginModal } from "./modals/LoginModal";
-import { Button } from "./ui/button";
-import supabase from "@/config/supabase";
 import useAuthStore from "@/store/authStore";
+import { MainMenu } from "./MainMenu";
 
 export const Header = () => {
   const token = useAuthStore((state) => state.token);
-  const clearAuthUser = useAuthStore((state) => state.clearAuthUser);
-
-  const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error logging out:", error.message);
-      return;
-    }
-
-    clearAuthUser();
-  };
 
   return (
     <>
@@ -41,18 +26,7 @@ export const Header = () => {
               </NavigationMenuItem>
             )}
 
-            {token && (
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Welcome, Admin</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuLink>
-                    <Button variant="ghost" onClick={logout}>
-                      Logout
-                    </Button>
-                  </NavigationMenuLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            )}
+            {token && <MainMenu />}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
