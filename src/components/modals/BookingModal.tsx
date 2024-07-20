@@ -26,12 +26,14 @@ type BookingModalProps = {
   seats: string;
   breakDown: string;
   totalDisplay: string;
+  onClear: () => void;
 };
 
 export const BookingModal: FC<BookingModalProps> = ({
   seats,
   breakDown,
   totalDisplay,
+  onClear,
 }) => {
   const [fullName, setFullName] = useState("");
   const [network, setNetwork] = useState("");
@@ -92,6 +94,7 @@ export const BookingModal: FC<BookingModalProps> = ({
       setMobile("");
       setNetwork("");
 
+      onClear();
       generatePdfDocument(data);
     }
   };

@@ -50,14 +50,14 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
         <View style={styles.mainHeader}>
           <View style={styles.header}>
             <Text style={styles.headerText}>Booking Date</Text>
-            <Text style={styles.headerText}>{format(new Date(), "PPPP")}</Text>
+            <Text style={styles.headerText}>{format(new Date(), "PPP")}</Text>
           </View>
           <View style={styles.header}>
             <Text style={[styles.headerText, { color: "red" }]}>
               Cancellation Date
             </Text>
             <Text style={[styles.headerText, { color: "red" }]}>
-              {format(tomorrow, "PPPP")}
+              {format(tomorrow, "PPP")}
             </Text>
           </View>
         </View>
@@ -70,7 +70,7 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
         <View>
           <Text style={{ marginBottom: 25, color: "blue" }}>
             Php {numberWithCommas(totalAmount)}.00 due on{" "}
-            {format(tomorrow, "PPPP")}
+            {format(tomorrow, "PPP")}
           </Text>
           <View
             style={{
@@ -105,10 +105,10 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
                   {vipDetails.qty}
                 </Text>
                 <Text style={{ fontSize: 12, flexBasis: 100 }}>
-                  Php {vipDetails.unitPrice}.00
+                  {vipDetails.unitPrice}
                 </Text>
                 <Text style={{ fontSize: 12, flexBasis: 100 }}>
-                  Php {numberWithCommas(vipDetails.amount)}.00
+                  {numberWithCommas(vipDetails.amount)}
                 </Text>
               </View>
             )}
@@ -129,10 +129,10 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
                   {premiereDetails.qty}
                 </Text>
                 <Text style={{ fontSize: 12, flexBasis: 100 }}>
-                  Php {premiereDetails.unitPrice}.00
+                  {premiereDetails.unitPrice}
                 </Text>
                 <Text style={{ fontSize: 12, flexBasis: 100 }}>
-                  Php {numberWithCommas(premiereDetails.amount)}.00
+                  {numberWithCommas(premiereDetails.amount)}
                 </Text>
               </View>
             )}

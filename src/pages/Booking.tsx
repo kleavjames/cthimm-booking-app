@@ -162,6 +162,12 @@ const Booking: FC<BookingProps> = () => {
     };
   }, [vipCount, premiereCount]);
 
+  const clearSelectedSeats = () => {
+    setSelectedSeats([]);
+    setVipCount(0);
+    setPremiereCount(0);
+  };
+
   return (
     <>
       <div className="flex flex-col">
@@ -307,10 +313,8 @@ const Booking: FC<BookingProps> = () => {
               seats={seatsSelected}
               breakDown={breakDownText}
               totalDisplay={totalAmount.display}
+              onClear={clearSelectedSeats}
             />
-            {/* <Button disabled={seatsSelected.length === 0} className="px-10">
-              Proceed booking
-            </Button> */}
           </div>
           <div className="divider"></div>
           <div className="flex flex-row gap-10">
