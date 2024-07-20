@@ -28,25 +28,6 @@ const Booking: FC<BookingProps> = () => {
     fetchBookings();
   }, []);
 
-  useEffect(() => {
-    const bookingListener = supabase
-      .channel("custom-insert-channel")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "bookings" },
-        ({ errors, new: booking }) => {
-          if (!errors) {
-            setBookings((prev) => [...prev, booking as Bookings]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      bookingListener.unsubscribe();
-    };
-  }, []);
-
   const fetchBookings = async () => {
     const { data: bookings, error } = await supabase
       .from("bookings")
@@ -314,6 +295,7 @@ const Booking: FC<BookingProps> = () => {
               breakDown={breakDownText}
               totalDisplay={totalAmount.display}
               onClear={clearSelectedSeats}
+              onDone={fetchBookings}
             />
           </div>
           <div className="divider"></div>

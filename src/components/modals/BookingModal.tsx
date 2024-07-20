@@ -27,6 +27,7 @@ type BookingModalProps = {
   breakDown: string;
   totalDisplay: string;
   onClear: () => void;
+  onDone: () => void;
 };
 
 export const BookingModal: FC<BookingModalProps> = ({
@@ -34,6 +35,7 @@ export const BookingModal: FC<BookingModalProps> = ({
   breakDown,
   totalDisplay,
   onClear,
+  onDone,
 }) => {
   const [fullName, setFullName] = useState("");
   const [network, setNetwork] = useState("");
@@ -100,6 +102,7 @@ export const BookingModal: FC<BookingModalProps> = ({
       setNetwork("");
 
       onClear();
+      onDone();
       generatePdfDocument(data);
     }
   };

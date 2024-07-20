@@ -84,7 +84,7 @@ export const MainMenu = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild disabled>
             <Link to="/statistics">
               <BarChart3 className="mr-2 h-4 w-4" />
               <span>Statistics</span>
