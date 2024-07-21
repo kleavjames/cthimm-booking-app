@@ -157,136 +157,139 @@ const Booking: FC<BookingProps> = () => {
             STAGE
           </p>
         </div>
-        <div className="flex flex-row justify-center items-center gap-5 mb-5">
-          <div className="flex flex-row items-center gap-2">
-            <Seat
-              seatCategory={SeatCategoryEnum.VIP}
-              seatStatus={SeatStatusEnum.AVAILABLE}
-              onPress={() => {}}
-            />
-            <p>VIP Available</p>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <Seat
-              seatCategory={SeatCategoryEnum.VIP}
-              seatStatus={SeatStatusEnum.TAKEN}
-              onPress={() => {}}
-            />
-            <p>VIP Taken</p>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <Seat
-              seatStatus={SeatStatusEnum.AVAILABLE}
-              seatCategory={SeatCategoryEnum.PREMIERE}
-              onPress={() => {}}
-            />
-            <p>Premiere Available</p>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <Seat
-              seatStatus={SeatStatusEnum.TAKEN}
-              seatCategory={SeatCategoryEnum.PREMIERE}
-              onPress={() => {}}
-            />
-            <p>Premiere Taken</p>
-          </div>
-          <div className="flex flex-row items-center gap-2">
-            <Seat
-              seatCategory={SeatCategoryEnum.VIP}
-              seatStatus={SeatStatusEnum.RESERVED}
-              onPress={() => {}}
-            />
-            <p>Reserved</p>
-          </div>
-        </div>
-        <div className="px-10 mx-auto">
-          <div className="max-w-full h-[750px] overflow-scroll">
-            <div className="flex flex-col gap-2 m-2">
-              {rows.map((row) => (
-                <div key={row} className="flex flex-row gap-10">
-                  <div className="flex flex-row gap-2">
-                    <p className="w-10">{row}</p>
-                    {seatNumbers[0].map((seatNum) => {
-                      const seatName = `${row}${seatNum}`;
-                      return (
-                        <Seat
-                          key={seatNum}
-                          seatNum={seatNum}
-                          seatStatus={getSeatStatus(seatName)}
-                          seatCategory={
-                            handleSeatType(row)
-                              ? SeatCategoryEnum.VIP
-                              : SeatCategoryEnum.PREMIERE
-                          }
-                          notIncluded={notIncluded.includes(seatName)}
-                          onPress={() => onSelectSeat(seatName)}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    {seatNumbers[1].map((seatNum) => {
-                      const seatName = `${row}${seatNum}`;
-                      return (
-                        <Seat
-                          key={seatNum}
-                          seatNum={seatNum}
-                          seatStatus={getSeatStatus(seatName)}
-                          seatCategory={
-                            handleSeatType(row)
-                              ? SeatCategoryEnum.VIP
-                              : SeatCategoryEnum.PREMIERE
-                          }
-                          notIncluded={notIncluded.includes(seatName)}
-                          onPress={() => onSelectSeat(seatName)}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    {seatNumbers[2].map((seatNum) => {
-                      const seatName = `${row}${seatNum}`;
-                      return (
-                        <Seat
-                          key={seatNum}
-                          seatNum={seatNum}
-                          seatStatus={getSeatStatus(seatName)}
-                          seatCategory={
-                            handleSeatType(row)
-                              ? SeatCategoryEnum.VIP
-                              : SeatCategoryEnum.PREMIERE
-                          }
-                          notIncluded={notIncluded.includes(seatName)}
-                          onPress={() => onSelectSeat(seatName)}
-                        />
-                      );
-                    })}
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    {seatNumbers[3].map((seatNum) => {
-                      const seatName = `${row}${seatNum}`;
-                      return (
-                        <Seat
-                          key={seatNum}
-                          seatNum={seatNum}
-                          seatStatus={getSeatStatus(seatName)}
-                          seatCategory={
-                            handleSeatType(row)
-                              ? SeatCategoryEnum.VIP
-                              : SeatCategoryEnum.PREMIERE
-                          }
-                          notIncluded={notIncluded.includes(seatName)}
-                          onPress={() => onSelectSeat(seatName)}
-                        />
-                      );
-                    })}
-                    <p className="w-10 text-right">{row}</p>
-                  </div>
-                </div>
-              ))}
+
+        <div className="container mx-auto mb-5">
+          <div className="flex flex-row justify-center md:gap-10">
+            <div className="flex flex-row items-center gap-2">
+              <Seat
+                seatCategory={SeatCategoryEnum.VIP}
+                seatStatus={SeatStatusEnum.AVAILABLE}
+                onPress={() => {}}
+              />
+              <p className="text-xs">VIP Available</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Seat
+                seatCategory={SeatCategoryEnum.VIP}
+                seatStatus={SeatStatusEnum.TAKEN}
+                onPress={() => {}}
+              />
+              <p className="text-xs">VIP Taken</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Seat
+                seatStatus={SeatStatusEnum.AVAILABLE}
+                seatCategory={SeatCategoryEnum.PREMIERE}
+                onPress={() => {}}
+              />
+              <p className="text-xs">Premiere Available</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Seat
+                seatStatus={SeatStatusEnum.TAKEN}
+                seatCategory={SeatCategoryEnum.PREMIERE}
+                onPress={() => {}}
+              />
+              <p className="text-xs">Premiere Taken</p>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <Seat
+                seatCategory={SeatCategoryEnum.VIP}
+                seatStatus={SeatStatusEnum.RESERVED}
+                onPress={() => {}}
+              />
+              <p className="text-xs">Reserved</p>
             </div>
           </div>
         </div>
+
+        <div className="flex overflow-x-auto">
+          <div className="flex flex-col gap-2 m-2">
+            {rows.map((row) => (
+              <div key={row} className="flex flex-row gap-10">
+                <div className="flex flex-row gap-2">
+                  <p className="w-10">{row}</p>
+                  {seatNumbers[0].map((seatNum) => {
+                    const seatName = `${row}${seatNum}`;
+                    return (
+                      <Seat
+                        key={seatNum}
+                        seatNum={seatNum}
+                        seatStatus={getSeatStatus(seatName)}
+                        seatCategory={
+                          handleSeatType(row)
+                            ? SeatCategoryEnum.VIP
+                            : SeatCategoryEnum.PREMIERE
+                        }
+                        notIncluded={notIncluded.includes(seatName)}
+                        onPress={() => onSelectSeat(seatName)}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex flex-row gap-2">
+                  {seatNumbers[1].map((seatNum) => {
+                    const seatName = `${row}${seatNum}`;
+                    return (
+                      <Seat
+                        key={seatNum}
+                        seatNum={seatNum}
+                        seatStatus={getSeatStatus(seatName)}
+                        seatCategory={
+                          handleSeatType(row)
+                            ? SeatCategoryEnum.VIP
+                            : SeatCategoryEnum.PREMIERE
+                        }
+                        notIncluded={notIncluded.includes(seatName)}
+                        onPress={() => onSelectSeat(seatName)}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex flex-row gap-2">
+                  {seatNumbers[2].map((seatNum) => {
+                    const seatName = `${row}${seatNum}`;
+                    return (
+                      <Seat
+                        key={seatNum}
+                        seatNum={seatNum}
+                        seatStatus={getSeatStatus(seatName)}
+                        seatCategory={
+                          handleSeatType(row)
+                            ? SeatCategoryEnum.VIP
+                            : SeatCategoryEnum.PREMIERE
+                        }
+                        notIncluded={notIncluded.includes(seatName)}
+                        onPress={() => onSelectSeat(seatName)}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex flex-row gap-2">
+                  {seatNumbers[3].map((seatNum) => {
+                    const seatName = `${row}${seatNum}`;
+                    return (
+                      <Seat
+                        key={seatNum}
+                        seatNum={seatNum}
+                        seatStatus={getSeatStatus(seatName)}
+                        seatCategory={
+                          handleSeatType(row)
+                            ? SeatCategoryEnum.VIP
+                            : SeatCategoryEnum.PREMIERE
+                        }
+                        notIncluded={notIncluded.includes(seatName)}
+                        onPress={() => onSelectSeat(seatName)}
+                      />
+                    );
+                  })}
+                  <p className="w-10 text-right">{row}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="container mx-auto my-10">
           <div className="flex flex-row justify-between items-center mb-5">
             <p className="text-lg font-bold">Booking Details</p>
@@ -298,8 +301,7 @@ const Booking: FC<BookingProps> = () => {
               onDone={fetchBookings}
             />
           </div>
-          <div className="divider"></div>
-          <div className="flex flex-row gap-10">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">
               <Label label="Name" values="Restore Philippines Conference" />
               <Label label="Venue" values="USEP Dome" />
