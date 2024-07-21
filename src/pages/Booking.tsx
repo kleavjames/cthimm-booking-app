@@ -49,8 +49,9 @@ const Booking: FC<BookingProps> = () => {
     const { error, count: deluxeCount } = await supabase
       .from("bookings")
       .select("*", { count: "exact", head: true })
-      .eq("seat_category", SeatCategoryEnum.DELUXE)
-      .eq("seat_status", SeatStatusEnum.TAKEN);
+      .or(
+        "seat_category.eq.deluxe,and(seat_status.eq.taken,seat_status.eq.reserved)"
+      );
 
     if (error) {
       console.error("Error fetching deluxe seats", error);
@@ -58,6 +59,7 @@ const Booking: FC<BookingProps> = () => {
     }
 
     if (deluxeCount) {
+      console.log("delux count", deluxeCount);
       setDeluxeTaken(deluxeCount);
     }
   };
