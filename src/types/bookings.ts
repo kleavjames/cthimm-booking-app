@@ -9,4 +9,5 @@ export type Bookings = {
   network: string;
   amount: number;
   cancellation_date: string;
+  reference_number: string;
 };

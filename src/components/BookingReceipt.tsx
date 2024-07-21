@@ -7,10 +7,14 @@ import { format, addDays } from "date-fns";
 
 type BookingReceiptProps = {
   bookings: Bookings[];
+  referenceNumber: string;
 };
 
 // Create Document Component
-export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
+export const BookingReceipt: FC<BookingReceiptProps> = ({
+  bookings,
+  referenceNumber,
+}) => {
   const billDetails = bookings[0];
   const totalAmount = bookings.reduce((acc, curr) => acc + curr.amount, 0);
   const vipDetails = useMemo(() => {
@@ -37,6 +41,18 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
       amount: premiereBookings.reduce((acc, curr) => acc + curr.amount, 0),
     };
   }, [bookings]);
+  const deluxeDetails = useMemo(() => {
+    const deluxeBookings = bookings.filter(
+      (booking) => booking.seat_category === SeatCategoryEnum.DELUXE
+    );
+
+    return {
+      seats: "Deluxe Seat",
+      qty: deluxeBookings.length,
+      unitPrice: 300,
+      amount: deluxeBookings.reduce((acc, curr) => acc + curr.amount, 0),
+    };
+  }, [bookings]);
 
   // new date() + 1 day
   const tomorrow = addDays(new Date(), 1);
@@ -49,6 +65,22 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
         </View>
         <View style={styles.mainHeader}>
           <View style={styles.header}>
+            <Text style={styles.headerText}>Booking Reference #</Text>
+            <Text style={styles.headerText}>{referenceNumber}</Text>
+          </View>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Network:</Text>
+            <Text style={styles.headerText}>{billDetails.network}</Text>
+          </View>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Name:</Text>
+            <Text style={styles.headerText}>{billDetails.fullname}</Text>
+          </View>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Mobile:</Text>
+            <Text style={styles.headerText}>{billDetails.mobile}</Text>
+          </View>
+          <View style={styles.header}>
             <Text style={styles.headerText}>Booking Date</Text>
             <Text style={styles.headerText}>{format(new Date(), "PPP")}</Text>
           </View>
@@ -60,12 +92,6 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
               {format(tomorrow, "PPP")}
             </Text>
           </View>
-        </View>
-        <View style={styles.bill}>
-          <Text style={styles.billTo}>Bill to</Text>
-          <Text style={styles.baseText}>{billDetails.fullname}</Text>
-          <Text style={styles.baseText}>{billDetails.mobile}</Text>
-          <Text style={styles.baseText}>{billDetails.network}</Text>
         </View>
         <View>
           <Text style={{ marginBottom: 25, color: "blue" }}>
@@ -136,6 +162,30 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
                 </Text>
               </View>
             )}
+            {deluxeDetails.qty > 0 && (
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  gap: 30,
+                }}
+              >
+                <Text style={{ fontSize: 12, flexBasis: 200 }}>
+                  {deluxeDetails.seats}
+                </Text>
+                <Text style={{ fontSize: 12, flexBasis: 100 }}>Deluxe</Text>
+                <Text style={{ fontSize: 12, flexBasis: 100 }}>
+                  {deluxeDetails.qty}
+                </Text>
+                <Text style={{ fontSize: 12, flexBasis: 100 }}>
+                  {deluxeDetails.unitPrice}
+                </Text>
+                <Text style={{ fontSize: 12, flexBasis: 100 }}>
+                  {numberWithCommas(deluxeDetails.amount)}
+                </Text>
+              </View>
+            )}
             <View style={{ border: 0.5 }}></View>
             <View
               style={{
@@ -198,11 +248,9 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
             Please pay on or before due date to avoid cancellation
           </Text>
           <Text style={{ fontSize: 12, marginTop: 10, color: "#9aa0a6" }}>
-            Please send a direct message for your proof of payment (screenshot,
-            deposit slip, or reference no.) to FB Page: CTHIMM Online Portal
-          </Text>
-          <Text style={{ fontSize: 12, marginTop: 35, color: "#9aa0a6" }}>
-            Reminders:
+            Please send a direct message to FB Page: CTHIMM Online Portal along
+            with your booking reference # and your proof of payment (screenshot,
+            deposit slip, or reference no.)
           </Text>
           <Text style={{ fontSize: 12, marginTop: 10, color: "#9aa0a6" }}>
             You are given 24 hours to pay for your reservation and send your

@@ -106,12 +106,16 @@ const Reservations = () => {
         <div className="flex items-center py-4 justify-between">
           <div className="flex flex-row gap-5">
             <Input
-              placeholder="Filter by seat"
+              placeholder="Search reference #"
               value={
-                (table.getColumn("seat")?.getFilterValue() as string) ?? ""
+                (table
+                  .getColumn("reference_number")
+                  ?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("seat")?.setFilterValue(event.target.value)
+                table
+                  .getColumn("reference_number")
+                  ?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
@@ -122,16 +126,6 @@ const Reservations = () => {
               }
               onChange={(event) =>
                 table.getColumn("network")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-            <Input
-              placeholder="Filter by booker"
-              value={
-                (table.getColumn("fullname")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("fullname")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />

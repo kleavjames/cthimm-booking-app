@@ -14,15 +14,13 @@ import { Label } from "../components/Label";
 import { BookingModal } from "@/components/modals/BookingModal";
 import supabase from "@/config/supabase";
 import { Bookings } from "@/types/bookings";
-import { DeluxeModal } from "@/components/modals/DeluxeForm";
+import { DeluxeSeatModal } from "@/components/modals/DeluxeSeatModal";
 import useSeatStore from "@/store/seatStore";
 import { useShallow } from "zustand/react/shallow";
+import { ConfirmModal } from "@/components/modals/ConfirmModal";
+import useReferenceStore from "@/store/referenceStore";
 
-type BookingProps = {
-  //
-};
-
-const Booking: FC<BookingProps> = () => {
+const Booking: FC = () => {
   const [selectedSeats, vipCount, premiereCount, deluxeCount] = useSeatStore(
     useShallow((state) => [
       state.selectedSeats,
@@ -36,8 +34,10 @@ const Booking: FC<BookingProps> = () => {
   const setVipCount = useSeatStore((state) => state.setVipCount);
   const setPremiereCount = useSeatStore((state) => state.setPremiereCount);
   const setDeluxeCount = useSeatStore((state) => state.setDeluxeCount);
+  const referenceNumber = useReferenceStore((state) => state.referenceNumber);
 
   const [bookings, setBookings] = useState<Bookings[]>([]);
+  const [showConfirmBooking, setShowConfirmBooking] = useState(false);
   const [deluxeTaken, setDeluxeTaken] = useState(0);
 
   useEffect(() => {
@@ -351,7 +351,7 @@ const Booking: FC<BookingProps> = () => {
             </p>
           </div>
           <div className="flex justify-center">
-            <DeluxeModal />
+            <DeluxeSeatModal />
           </div>
           <div>
             <p className="text-center mt-2">
@@ -366,12 +366,10 @@ const Booking: FC<BookingProps> = () => {
             <p className="text-lg font-bold">Booking Details</p>
             <BookingModal
               total={totalAmount.value}
-              // seats={seatsSelected}
               seatsDisplay={seatSelectedDisplay}
               breakDown={breakDownText}
               totalDisplay={totalAmount.display}
-              onClear={clearSelectedSeats}
-              onDone={fetchBookings}
+              onConfirm={setShowConfirmBooking}
             />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
@@ -400,6 +398,45 @@ const Booking: FC<BookingProps> = () => {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        show={showConfirmBooking}
+        onClear={clearSelectedSeats}
+        onDone={fetchBookings}
+        setShow={setShowConfirmBooking}
+      >
+        <div className="mb-5">
+          <div className="my-2">
+            <p className="text-center font-bold">Booking Reference #</p>
+            <p className="text-center text-[40px] font-bold text-green-500">
+              {referenceNumber}
+            </p>
+          </div>
+          <div className="mt-5">
+            <p className="text-sm text-gray-400 text-center mb-5">
+              Please send a direct message to FB Page: CTHIMM Online Portal
+              along with your{" "}
+              <span className="text-blue-400">booking reference #</span> and
+              your <span className="text-blue-400">proof of payment </span>
+              (screenshot, deposit slip, or reference no.)
+            </p>
+          </div>
+          <div className="mt-5">
+            <div className="border border-gray-600 rounded-md p-2.5">
+              <p className="text-sm mb-2 text-gray-400">Payment Details</p>
+              <p className="text-sm text-blue-500">Gcash</p>
+              <p className="text-sm">Mary Crystel Isais - 09225046717</p>
+              <p className="text-sm">Felochie Gencianos - 09983459439</p>
+              <p className="text-sm mt-2 text-orange-400">Unionbank</p>
+              <p className="text-sm">Mary Crystel Isais - 109350014528</p>
+            </div>
+          </div>
+          <p className="text-sm text-red-400 text-center mt-4">
+            You are given 24 hours to pay for your reservation and send your
+            proof of payment. Failure to comply will result to the cancellation
+            of the reservation.
+          </p>
+        </div>
+      </ConfirmModal>
     </>
   );
 };

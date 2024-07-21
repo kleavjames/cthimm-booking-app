@@ -15,7 +15,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { generateStringWithRandomNumbers } from "@/utils/strings";
 import useSeatStore from "@/store/seatStore";
 
-export const DeluxeModal: FC = () => {
+export const DeluxeSeatModal: FC = () => {
   const deluxeCount = useSeatStore((state) => state.deluxeCount);
   const setDeluxeCount = useSeatStore((state) => state.setDeluxeCount);
   const setDeluxeSeats = useSeatStore((state) => state.setDeluxeSeats);

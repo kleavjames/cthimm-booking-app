@@ -22,33 +22,38 @@ import { pdf } from "@react-pdf/renderer";
 import { BookingReceipt } from "../BookingReceipt";
 import { Bookings } from "@/types/bookings";
 import useSeatStore from "@/store/seatStore";
+import useReferenceStore from "@/store/referenceStore";
 
 type BookingModalProps = {
   breakDown: string;
   totalDisplay: string;
   seatsDisplay: string;
   total: number;
-  onClear: () => void;
-  onDone: () => void;
+  onConfirm: (show: boolean) => void;
 };
 
 export const BookingModal: FC<BookingModalProps> = ({
   breakDown,
   totalDisplay,
-  onClear,
-  onDone,
+  onConfirm,
   seatsDisplay,
   total = 0,
 }) => {
   const deluxeSeats = useSeatStore((state) => state.deluxeSeats);
+  const referenceNumber = useReferenceStore((state) => state.referenceNumber);
+  const generateNewReference = useReferenceStore(
+    (state) => state.generateNewReference
+  );
 
   const [fullName, setFullName] = useState("");
   const [network, setNetwork] = useState("");
   const [mobile, setMobile] = useState("");
 
   const generatePdfDocument = async (booking: Bookings[]) => {
-    const blob = await pdf(<BookingReceipt bookings={booking} />).toBlob();
-    saveAs(blob, `booking-receipt-${new Date().toISOString()}.pdf`);
+    const blob = await pdf(
+      <BookingReceipt referenceNumber={referenceNumber} bookings={booking} />
+    ).toBlob();
+    saveAs(blob, `booking-receipt-${referenceNumber}.pdf`);
   };
 
   const onSubmitBooking = async () => {
@@ -115,7 +120,12 @@ export const BookingModal: FC<BookingModalProps> = ({
       };
     });
 
-    const bookingDetails = [...vipAndPremierBookingDetails, ...deluxeBooking];
+    let bookingDetails = [...vipAndPremierBookingDetails, ...deluxeBooking];
+    bookingDetails = bookingDetails.map((booking) => ({
+      ...booking,
+      reference_number: referenceNumber,
+    }));
+
     const { data, error } = await supabase
       .from("bookings")
       .insert(bookingDetails)
@@ -130,16 +140,20 @@ export const BookingModal: FC<BookingModalProps> = ({
       setMobile("");
       setNetwork("");
 
-      onClear();
-      onDone();
       generatePdfDocument(data);
+      onConfirm(true);
     }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={total === 0} variant="default" className="px-10">
+        <Button
+          onClick={generateNewReference}
+          disabled={total === 0}
+          variant="default"
+          className="px-10"
+        >
           Process Booking
         </Button>
       </DialogTrigger>

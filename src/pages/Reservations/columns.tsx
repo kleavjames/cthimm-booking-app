@@ -29,6 +29,13 @@ export const columns: ColumnDef<Bookings>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "reference_number",
+    header: "Reference #",
+    cell: ({ row }) => {
+      return <div>{row.getValue("reference_number")}</div>;
+    },
+  },
+  {
     accessorKey: "seat",
     accessorFn: (row) =>
       row.seat_category === SeatCategoryEnum.DELUXE ? "Deluxe Seat" : row.seat,
