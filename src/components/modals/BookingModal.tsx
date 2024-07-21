@@ -23,6 +23,7 @@ import { BookingReceipt } from "../BookingReceipt";
 import { Bookings } from "@/types/bookings";
 import useSeatStore from "@/store/seatStore";
 import useReferenceStore from "@/store/referenceStore";
+import { cancellationOnNextDate } from "@/utils/dates";
 
 type BookingModalProps = {
   breakDown: string;
@@ -84,10 +85,6 @@ export const BookingModal: FC<BookingModalProps> = ({
     const vipAndPremierBookingDetails = seating
       .filter((seat) => !seat.includes("Deluxe"))
       .map((seat) => {
-        // date now + 1 day for cancellation
-        const cancellation_date = new Date();
-        cancellation_date.setDate(cancellation_date.getDate() + 1);
-
         return {
           seat,
           seat_category: getSeatCategory(seat),
@@ -99,15 +96,11 @@ export const BookingModal: FC<BookingModalProps> = ({
             getSeatCategory(seat) === SeatCategoryEnum.VIP
               ? price.vip
               : price.premier,
-          cancellation_date,
+          cancellation_date: cancellationOnNextDate(),
         };
       });
 
     const deluxeBooking = deluxeSeats.map((seat) => {
-      // date now + 1 day for cancellation
-      const cancellation_date = new Date();
-      cancellation_date.setDate(cancellation_date.getDate() + 1);
-
       return {
         seat,
         seat_category: SeatCategoryEnum.DELUXE,
@@ -116,7 +109,7 @@ export const BookingModal: FC<BookingModalProps> = ({
         mobile,
         network,
         amount: price.deluxe,
-        cancellation_date,
+        cancellation_date: cancellationOnNextDate(),
       };
     });
 
