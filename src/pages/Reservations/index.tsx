@@ -120,12 +120,12 @@ const Reservations = () => {
               className="max-w-sm"
             />
             <Input
-              placeholder="Filter by network"
+              placeholder="Search by name"
               value={
-                (table.getColumn("network")?.getFilterValue() as string) ?? ""
+                (table.getColumn("fullname")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("network")?.setFilterValue(event.target.value)
+                table.getColumn("fullname")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
