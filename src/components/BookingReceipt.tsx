@@ -195,7 +195,19 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({ bookings }) => {
             </View>
           </View>
           <Text style={{ fontSize: 12, marginTop: 35, color: "#9aa0a6" }}>
-            Please on or before due date to avoid cancellation
+            Please pay on or before due date to avoid cancellation
+          </Text>
+          <Text style={{ fontSize: 12, marginTop: 10, color: "#9aa0a6" }}>
+            Please send a direct message for your proof of payment (screenshot,
+            deposit slip, or reference no.) to FB Page: CTHIMM Online Portal
+          </Text>
+          <Text style={{ fontSize: 12, marginTop: 35, color: "#9aa0a6" }}>
+            Reminders:
+          </Text>
+          <Text style={{ fontSize: 12, marginTop: 10, color: "#9aa0a6" }}>
+            You are given 24 hours to pay for your reservation and send your
+            proof of payment. Failure to comply will result to the cancellation
+            of the reservation.
           </Text>
         </View>
       </Page>
