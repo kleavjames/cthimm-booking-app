@@ -30,6 +30,8 @@ export const columns: ColumnDef<Bookings>[] = [
   },
   {
     accessorKey: "seat",
+    accessorFn: (row) =>
+      row.seat_category === SeatCategoryEnum.DELUXE ? "Deluxe Seat" : row.seat,
     header: ({ column }) => {
       return (
         <Button

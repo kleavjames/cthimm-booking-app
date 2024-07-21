@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { numberWithCommas, splitStringAndNumbers } from "../utils/strings";
 import {
+  maxDeluxeSeatCount,
   notIncluded,
   price,
   rows,
@@ -13,20 +14,53 @@ import { Label } from "../components/Label";
 import { BookingModal } from "@/components/modals/BookingModal";
 import supabase from "@/config/supabase";
 import { Bookings } from "@/types/bookings";
+import { DeluxeModal } from "@/components/modals/DeluxeForm";
+import useSeatStore from "@/store/seatStore";
+import { useShallow } from "zustand/react/shallow";
 
 type BookingProps = {
   //
 };
 
 const Booking: FC<BookingProps> = () => {
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  const [vipCount, setVipCount] = useState(0);
-  const [premiereCount, setPremiereCount] = useState(0);
+  const [selectedSeats, vipCount, premiereCount, deluxeCount] = useSeatStore(
+    useShallow((state) => [
+      state.selectedSeats,
+      state.vipCount,
+      state.premiereCount,
+      state.deluxeCount,
+    ])
+  );
+  const setSelectedSeats = useSeatStore((state) => state.setSelectedSeats);
+  const setDeluxeSeats = useSeatStore((state) => state.setDeluxeSeats);
+  const setVipCount = useSeatStore((state) => state.setVipCount);
+  const setPremiereCount = useSeatStore((state) => state.setPremiereCount);
+  const setDeluxeCount = useSeatStore((state) => state.setDeluxeCount);
+
   const [bookings, setBookings] = useState<Bookings[]>([]);
+  const [deluxeTaken, setDeluxeTaken] = useState(0);
 
   useEffect(() => {
     fetchBookings();
+    fetchDeluxeSeats();
   }, []);
+
+  const fetchDeluxeSeats = async () => {
+    const { error, count: deluxeCount } = await supabase
+      .from("bookings")
+      .select("*", { count: "exact", head: true })
+      .eq("seat_category", SeatCategoryEnum.DELUXE)
+      .eq("seat_status", SeatStatusEnum.TAKEN);
+
+    if (error) {
+      console.error("Error fetching deluxe seats", error);
+      return;
+    }
+
+    if (deluxeCount) {
+      setDeluxeTaken(deluxeCount);
+    }
+  };
 
   const fetchBookings = async () => {
     const { data: bookings, error } = await supabase
@@ -54,18 +88,16 @@ const Booking: FC<BookingProps> = () => {
     ) {
       const charCode = letter?.charCodeAt(0);
       if (charCode >= "A".charCodeAt(0) && charCode <= "Q".charCodeAt(0)) {
-        op === "add"
-          ? setVipCount((prev) => prev + 1)
-          : setVipCount((prev) => prev - 1);
+        op === "add" ? setVipCount(vipCount + 1) : setVipCount(vipCount - 1);
       } else {
         op === "add"
-          ? setPremiereCount((prev) => prev + 1)
-          : setPremiereCount((prev) => prev - 1);
+          ? setPremiereCount(premiereCount + 1)
+          : setPremiereCount(premiereCount - 1);
       }
     } else {
       op === "add"
-        ? setPremiereCount((prev) => prev + 1)
-        : setPremiereCount((prev) => prev - 1);
+        ? setPremiereCount(premiereCount + 1)
+        : setPremiereCount(premiereCount - 1);
     }
   };
 
@@ -76,7 +108,7 @@ const Booking: FC<BookingProps> = () => {
     // not selected yet
     if (!foundSeat) {
       onHandleCounts(seat, "add");
-      setSelectedSeats((prevState) => [...prevState, seat]);
+      setSelectedSeats([...selectedSeats, seat]);
     } else {
       const selectedSeatCopy = [...selectedSeats];
       const filteredSeats = selectedSeatCopy.filter(
@@ -130,24 +162,43 @@ const Booking: FC<BookingProps> = () => {
           ? `, ${premiereCount} Premier${premiereCount <= 1 ? "" : "s"}`
           : `${premiereCount} Premier${premiereCount <= 1 ? "" : "s"}`;
     }
+    if (deluxeCount > 0) {
+      text +=
+        vipCount !== 0 || premiereCount !== 0
+          ? `, ${deluxeCount} Deluxe`
+          : `${deluxeCount} Deluxe`;
+    }
     return text;
-  }, [vipCount, premiereCount]);
+  }, [vipCount, premiereCount, deluxeCount]);
 
   const totalAmount = useMemo(() => {
-    const { vip, premier } = price;
-    const total = vip * vipCount + premier * premiereCount;
+    const { vip, premier, deluxe } = price;
+    const total =
+      vip * vipCount + premier * premiereCount + deluxe * deluxeCount;
 
     return {
       display: `₱ ${numberWithCommas(total)}.00`,
       value: total,
     };
-  }, [vipCount, premiereCount]);
+  }, [vipCount, premiereCount, deluxeCount]);
 
   const clearSelectedSeats = () => {
     setSelectedSeats([]);
+    setDeluxeSeats([]);
     setVipCount(0);
     setPremiereCount(0);
+    setDeluxeCount(0);
   };
+
+  const seatSelectedDisplay = useMemo(() => {
+    if (deluxeCount > 0) {
+      return `${seatsSelected}${
+        selectedSeats.length > 0 ? "," : ""
+      } Deluxe Seat${deluxeCount > 1 ? "s" : ""}`;
+    }
+
+    return seatsSelected;
+  }, [deluxeCount, seatsSelected, selectedSeats.length]);
 
   return (
     <>
@@ -291,10 +342,30 @@ const Booking: FC<BookingProps> = () => {
         </div>
 
         <div className="container mx-auto my-10">
+          <div>
+            <p className="text-center font-bold text-red-300 text-lg mb-2">
+              {numberWithCommas(maxDeluxeSeatCount - deluxeTaken)} seats
+              available for Deluxe
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <DeluxeModal />
+          </div>
+          <div>
+            <p className="text-center mt-2">
+              Deluxe booking is on balcony area.
+              <br /> First come first serve policy.
+            </p>
+          </div>
+        </div>
+
+        <div className="container mx-auto my-10">
           <div className="flex flex-row justify-between items-center mb-5">
             <p className="text-lg font-bold">Booking Details</p>
             <BookingModal
-              seats={seatsSelected}
+              total={totalAmount.value}
+              // seats={seatsSelected}
+              seatsDisplay={seatSelectedDisplay}
               breakDown={breakDownText}
               totalDisplay={totalAmount.display}
               onClear={clearSelectedSeats}
@@ -314,7 +385,7 @@ const Booking: FC<BookingProps> = () => {
             <div className="flex flex-1 flex-col gap-3 border border-gray-500 p-6 rounded-lg">
               <Label
                 label="Seats"
-                values={seatsSelected}
+                values={seatSelectedDisplay}
                 placeholder="Please select a set"
               />
               <Label

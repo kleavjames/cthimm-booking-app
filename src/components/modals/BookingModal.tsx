@@ -21,22 +21,27 @@ import { saveAs } from "file-saver";
 import { pdf } from "@react-pdf/renderer";
 import { BookingReceipt } from "../BookingReceipt";
 import { Bookings } from "@/types/bookings";
+import useSeatStore from "@/store/seatStore";
 
 type BookingModalProps = {
-  seats: string;
   breakDown: string;
   totalDisplay: string;
+  seatsDisplay: string;
+  total: number;
   onClear: () => void;
   onDone: () => void;
 };
 
 export const BookingModal: FC<BookingModalProps> = ({
-  seats,
   breakDown,
   totalDisplay,
   onClear,
   onDone,
+  seatsDisplay,
+  total = 0,
 }) => {
+  const deluxeSeats = useSeatStore((state) => state.deluxeSeats);
+
   const [fullName, setFullName] = useState("");
   const [network, setNetwork] = useState("");
   const [mobile, setMobile] = useState("");
@@ -47,7 +52,7 @@ export const BookingModal: FC<BookingModalProps> = ({
   };
 
   const onSubmitBooking = async () => {
-    const seating = seats.split(",").map((seat) => seat.trim());
+    const seating = seatsDisplay.split(",").map((seat) => seat.trim());
 
     const getSeatCategory = (seat: string) => {
       const { letters } = splitStringAndNumbers(seat);
@@ -64,29 +69,53 @@ export const BookingModal: FC<BookingModalProps> = ({
           : SeatCategoryEnum.PREMIERE;
       }
 
+      if (seat.includes("Deluxe")) {
+        return SeatCategoryEnum.DELUXE;
+      }
+
       return SeatCategoryEnum.PREMIERE;
     };
 
-    const bookingDetails = seating.map((seat) => {
+    const vipAndPremierBookingDetails = seating
+      .filter((seat) => !seat.includes("Deluxe"))
+      .map((seat) => {
+        // date now + 1 day for cancellation
+        const cancellation_date = new Date();
+        cancellation_date.setDate(cancellation_date.getDate() + 1);
+
+        return {
+          seat,
+          seat_category: getSeatCategory(seat),
+          seat_status: SeatStatusEnum.RESERVED,
+          fullname: fullName,
+          mobile,
+          network,
+          amount:
+            getSeatCategory(seat) === SeatCategoryEnum.VIP
+              ? price.vip
+              : price.premier,
+          cancellation_date,
+        };
+      });
+
+    const deluxeBooking = deluxeSeats.map((seat) => {
       // date now + 1 day for cancellation
       const cancellation_date = new Date();
       cancellation_date.setDate(cancellation_date.getDate() + 1);
 
       return {
         seat,
-        seat_category: getSeatCategory(seat),
+        seat_category: SeatCategoryEnum.DELUXE,
         seat_status: SeatStatusEnum.RESERVED,
         fullname: fullName,
         mobile,
         network,
-        amount:
-          getSeatCategory(seat) === SeatCategoryEnum.VIP
-            ? price.vip
-            : price.premier,
+        amount: price.deluxe,
         cancellation_date,
       };
     });
 
+    const bookingDetails = [...vipAndPremierBookingDetails, ...deluxeBooking];
     const { data, error } = await supabase
       .from("bookings")
       .insert(bookingDetails)
@@ -110,11 +139,7 @@ export const BookingModal: FC<BookingModalProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          disabled={seats.length === 0}
-          variant="default"
-          className="px-10"
-        >
+        <Button disabled={total === 0} variant="default" className="px-10">
           Process Booking
         </Button>
       </DialogTrigger>
@@ -128,7 +153,7 @@ export const BookingModal: FC<BookingModalProps> = ({
         <div className="flex flex-col gap-7 py-4">
           <div className="flex flex-row gap-5">
             <div className="flex-1">
-              <Label label="Seats Selected" values={seats} />
+              <Label label="Seats Selected" values={seatsDisplay} />
             </div>
             <div className="flex-1">
               <Label
@@ -152,13 +177,13 @@ export const BookingModal: FC<BookingModalProps> = ({
               />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <FormLabel htmlFor="fullName">Network</FormLabel>
+              <FormLabel htmlFor="network">Network</FormLabel>
               <NetworkSelect value={network} onChange={setNetwork} />
             </div>
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <FormLabel htmlFor="mobile">Mobile #</FormLabel>
               <Input
-                type="text"
+                type="number"
                 id="mobile"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}

@@ -12,3 +12,14 @@ export const splitStringAndNumbers = (input: string) => {
 export const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+export const generateStringWithRandomNumbers = () => {
+  // Generate 9 random numbers and join them into a string
+  let randomNumbers = "";
+  for (let i = 0; i < 9; i++) {
+    randomNumbers += Math.floor(Math.random() * 10).toString();
+  }
+
+  // Return the combined string
+  return "DELUXE" + randomNumbers;
+};

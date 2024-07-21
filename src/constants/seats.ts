@@ -154,3 +154,5 @@ export enum SeatCategoryEnum {
   VIP = "vip",
   DELUXE = "deluxe",
 }
+
+export const maxDeluxeSeatCount = 3500;
