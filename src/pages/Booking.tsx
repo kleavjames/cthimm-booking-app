@@ -386,7 +386,7 @@ const Booking: FC<BookingProps> = () => {
               <Label
                 label="Seats"
                 values={seatSelectedDisplay}
-                placeholder="Please select a set"
+                placeholder="Please select a seat"
               />
               <Label
                 label="Tickets x Quantities"
