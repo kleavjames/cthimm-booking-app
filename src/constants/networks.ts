@@ -232,4 +232,8 @@ export const mindanaoChurches = [
     id: 57,
     name: "Bagangga",
   },
+  {
+    id: 58,
+    name: "Others",
+  },
 ];
