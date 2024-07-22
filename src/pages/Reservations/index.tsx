@@ -78,7 +78,10 @@ const Reservations = () => {
     }
     const { data: updatedReservations, error } = await supabase
       .from("bookings")
-      .update({ seat_status: SeatStatusEnum.TAKEN })
+      .update({
+        seat_status: SeatStatusEnum.TAKEN,
+        cancellation_date: null,
+      })
       .in(
         "id",
         selectedRows.map((row) => row.id)
