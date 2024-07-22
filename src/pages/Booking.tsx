@@ -161,6 +161,16 @@ const Booking: FC = () => {
     [bookings, selectedSeats]
   );
 
+  const getSeatDetail = useCallback(
+    (seat: string) => {
+      const booking = bookings.find((booking) => booking.seat === seat);
+      if (booking) {
+        return booking;
+      }
+    },
+    [bookings]
+  );
+
   // display in booking details
   const seatsSelected = useMemo(() => {
     return selectedSeats.join(", ");
@@ -283,6 +293,7 @@ const Booking: FC = () => {
                         key={seatNum}
                         seatNum={seatNum}
                         seatStatus={getSeatStatus(seatName)}
+                        bookDetail={getSeatDetail(seatName)}
                         seatCategory={
                           handleSeatType(row)
                             ? SeatCategoryEnum.VIP
@@ -302,6 +313,7 @@ const Booking: FC = () => {
                         key={seatNum}
                         seatNum={seatNum}
                         seatStatus={getSeatStatus(seatName)}
+                        bookDetail={getSeatDetail(seatName)}
                         seatCategory={
                           handleSeatType(row)
                             ? SeatCategoryEnum.VIP
@@ -321,6 +333,7 @@ const Booking: FC = () => {
                         key={seatNum}
                         seatNum={seatNum}
                         seatStatus={getSeatStatus(seatName)}
+                        bookDetail={getSeatDetail(seatName)}
                         seatCategory={
                           handleSeatType(row)
                             ? SeatCategoryEnum.VIP
@@ -340,6 +353,7 @@ const Booking: FC = () => {
                         key={seatNum}
                         seatNum={seatNum}
                         seatStatus={getSeatStatus(seatName)}
+                        bookDetail={getSeatDetail(seatName)}
                         seatCategory={
                           handleSeatType(row)
                             ? SeatCategoryEnum.VIP
