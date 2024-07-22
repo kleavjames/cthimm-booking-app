@@ -453,7 +453,7 @@ const Booking: FC = () => {
               <p className="text-sm mb-2 text-gray-400">Payment Details</p>
               <p className="text-sm text-blue-500">Gcash</p>
               <p className="text-sm">Mary Crystel Isais - 09225046717</p>
-              <p className="text-sm">Felochie Gencianos - 09983459439</p>
+              <p className="text-sm">Felochie Arnoco - 09983459439</p>
               <p className="text-sm mt-2 text-orange-400">Unionbank</p>
               <p className="text-sm">Mary Crystel Isais - 109350014528</p>
             </div>

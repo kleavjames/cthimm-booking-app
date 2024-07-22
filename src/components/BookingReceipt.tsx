@@ -219,7 +219,7 @@ export const BookingReceipt: FC<BookingReceiptProps> = ({
             </View>
             <View style={styles.header}>
               <Text style={{ flexBasis: 150, fontSize: 14 }}>
-                Felochie Gencianos
+                Felochie Arnoco
               </Text>
               <Text style={styles.headerText}>09983459439</Text>
             </View>
