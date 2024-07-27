@@ -11,3 +11,11 @@ export type Bookings = {
   cancellation_date: string;
   reference_number: string;
 };
+
+export type NetworkStats = {
+  network: string;
+  vip: number;
+  premiere: number;
+  deluxe: number;
+  total: number;
+};
