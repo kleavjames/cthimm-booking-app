@@ -43,27 +43,39 @@ const Statistics = () => {
       <p className="font-bold text-4xl pt-5 pb-10">Statistics</p>
       <div className="flex flex-row justify-center gap-10 mb-10">
         <Card className="flex-1">
-          <CardHeader className="text-blue-400 text-xl">VIP</CardHeader>
+          <CardHeader className="text-blue-400 text-xl text-center">
+            VIP
+          </CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold text-blue-400">{vipCount}</p>
+            <p className="text-6xl font-bold text-blue-400 text-center">
+              {vipCount}
+            </p>
           </CardContent>
         </Card>
         <Card className="flex-1">
-          <CardHeader className="text-green-400 text-xl">Premiere</CardHeader>
+          <CardHeader className="text-green-400 text-xl text-center">
+            Premiere
+          </CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold text-green-400">{premiereCount}</p>
+            <p className="text-6xl font-bold text-green-400 text-center">
+              {premiereCount}
+            </p>
           </CardContent>
         </Card>
         <Card className="flex-1">
-          <CardHeader className="text-red-400 text-xl">Deluxe</CardHeader>
+          <CardHeader className="text-red-400 text-xl text-center">
+            Deluxe
+          </CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold text-red-400">{deluxeCount}</p>
+            <p className="text-6xl font-bold text-red-400 text-center">
+              {deluxeCount}
+            </p>
           </CardContent>
         </Card>
         <Card className="flex-1">
-          <CardHeader className="text-xl">Total</CardHeader>
+          <CardHeader className="text-xl text-center">Total</CardHeader>
           <CardContent>
-            <p className="text-6xl font-bold">
+            <p className="text-6xl font-bold text-center">
               {vipCount + premiereCount + deluxeCount}
             </p>
           </CardContent>

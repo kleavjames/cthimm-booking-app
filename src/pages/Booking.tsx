@@ -228,6 +228,9 @@ const Booking: FC = () => {
 
   return (
     <>
+      <div className="mt-10">
+        <img src="/restore-phil.JPG" className="h-[500px] mx-auto" />
+      </div>
       <div className="flex flex-col">
         <div className="container mx-auto bg-gray-300 my-10">
           <p className="text-center text-lg text-black font-bold bold py-5">
