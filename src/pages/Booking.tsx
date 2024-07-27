@@ -280,7 +280,7 @@ const Booking: FC = () => {
           </div>
         </div>
 
-        <div className="flex overflow-x-auto">
+        <div className="lg:mx-auto flex overflow-x-auto">
           <div className="flex flex-col gap-2 m-2">
             {rows.map((row) => (
               <div key={row} className="flex flex-row gap-10">

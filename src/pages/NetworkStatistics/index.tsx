@@ -1,6 +1,6 @@
 import supabase from "@/config/supabase";
-import { SeatStatusEnum } from "@/constants/seats";
-import { Bookings } from "@/types/bookings";
+import { SeatCategoryEnum, SeatStatusEnum } from "@/constants/seats";
+import { Bookings, NetworkStats } from "@/types/bookings";
 import {
   ColumnFiltersState,
   flexRender,
@@ -11,7 +11,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { columns } from "./columns";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,18 +22,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TRow } from "@/components/Tables/TRow";
-import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/Tables/Pagination";
+import {
+  networks,
+  luzonChurches,
+  mindanaoChurches,
+  visayasChurches,
+} from "@/constants/networks";
 
-const Reservations = () => {
-  const [reservations, setReservations] = useState<Bookings[]>([]);
+const initialNetworkStats = [
+  ...networks,
+  ...luzonChurches,
+  ...visayasChurches,
+  ...mindanaoChurches,
+].map((network) => ({
+  name: network.name,
+  vip: 0,
+  premiere: 0,
+  deluxe: 0,
+  total: 0,
+}));
+
+const NetworkStatistics = () => {
+  const [networkStats, setNetworkStats] = useState<NetworkStats[]>([]);
   // states
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data: reservations,
+    data: networkStats,
     columns: columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -50,15 +68,11 @@ const Reservations = () => {
     },
   });
 
-  useEffect(() => {
-    getReservationBookings();
-  }, []);
-
-  const getReservationBookings = async () => {
+  const getBookingsByNetwork = useCallback(async () => {
     const { data: bookings, error } = await supabase
       .from("bookings")
       .select("*")
-      .eq("seat_status", SeatStatusEnum.RESERVED);
+      .eq("seat_status", SeatStatusEnum.TAKEN);
 
     if (error) {
       alert("An error occurred while fetching reservations.");
@@ -67,82 +81,60 @@ const Reservations = () => {
     }
 
     if (bookings) {
-      setReservations(bookings);
+      onFormatNetworkStats(bookings);
     }
-  };
+  }, []);
 
-  const onConfirmBooking = async (selectedRows: Bookings[]) => {
-    if (selectedRows.length === 0) {
-      alert("Please select a reservation to confirm.");
-      return;
-    }
-    const { data: updatedReservations, error } = await supabase
-      .from("bookings")
-      .update({
-        seat_status: SeatStatusEnum.TAKEN,
-        cancellation_date: null,
-      })
-      .in(
-        "id",
-        selectedRows.map((row) => row.id)
-      )
-      .select("*");
+  useEffect(() => {
+    getBookingsByNetwork();
+  }, [getBookingsByNetwork]);
 
-    if (error) {
-      alert("An error occurred while confirming bookings.");
-      console.error("Error confirming bookings:", error.message);
-      return;
-    }
+  const onFormatNetworkStats = (bookings: Bookings[]) => {
+    const networkStats: NetworkStats[] = initialNetworkStats.map((network) => {
+      const networkBookings = bookings.filter(
+        (booking) => booking.network === network.name
+      );
 
-    if (updatedReservations) {
-      getReservationBookings();
-      table.toggleAllRowsSelected(false);
-    }
+      const vip = networkBookings.filter(
+        (booking) => booking.seat_category === SeatCategoryEnum.VIP
+      ).length;
+      const premiere = networkBookings.filter(
+        (booking) => booking.seat_category === SeatCategoryEnum.PREMIERE
+      ).length;
+      const deluxe = networkBookings.filter(
+        (booking) => booking.seat_category === SeatCategoryEnum.DELUXE
+      ).length;
+      const total = vip + premiere + deluxe;
+
+      return {
+        network: network.name,
+        vip,
+        premiere,
+        deluxe,
+        total,
+      };
+    });
+
+    setNetworkStats(networkStats);
   };
 
   return (
-    <div className="container mx-auto mt-5">
-      <p className="font-bold text-4xl py-5">Reservations</p>
+    <>
+      <p className="font-bold text-4xl py-5">Confirmed Bookings</p>
       <div className="py-2">
         <div className="flex items-center py-4 justify-between">
           <div className="flex flex-row gap-5">
             <Input
-              placeholder="Search reference #"
+              placeholder="Search network"
               value={
-                (table
-                  .getColumn("reference_number")
-                  ?.getFilterValue() as string) ?? ""
+                (table.getColumn("network")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table
-                  .getColumn("reference_number")
-                  ?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-            <Input
-              placeholder="Search by name"
-              value={
-                (table.getColumn("fullname")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("fullname")?.setFilterValue(event.target.value)
+                table.getColumn("network")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
           </div>
-          <Button
-            variant="default"
-            className="px-10"
-            onClick={() => {
-              const selectedRows = table
-                .getSelectedRowModel()
-                .rows.map((row) => row.original);
-              onConfirmBooking(selectedRows);
-            }}
-          >
-            Confirm
-          </Button>
         </div>
         <div className="rounded-md border">
           <Table>
@@ -175,8 +167,8 @@ const Reservations = () => {
         </div>
         <Pagination table={table} />
       </div>
-    </div>
+    </>
   );
 };
 
-export default Reservations;
+export default NetworkStatistics;
