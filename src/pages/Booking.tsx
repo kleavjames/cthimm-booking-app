@@ -45,20 +45,6 @@ const Booking: FC = () => {
     fetchDeluxeSeats();
   }, []);
 
-  // const onCancellationBooking = async () => {
-  //   const { error } = await supabase
-  //     .from("bookings")
-  //     .delete()
-  //     .gt("cancellation_date", new Date());
-
-  //   if (error) {
-  //     console.error("Error fetching bookings", error);
-  //     return;
-  //   }
-
-  //   fetchBookings();
-  // };
-
   const fetchDeluxeSeats = async () => {
     const { error, count: deluxeCount } = await supabase
       .from("bookings")
