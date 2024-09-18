@@ -133,6 +133,14 @@ export const notIncluded = [
   "V40",
   "V41",
   "V42",
+  "W39",
+  "W40",
+  "W41",
+  "W42",
+  "X39",
+  "X40",
+  "X41",
+  "X42",
 ];
 
 export const price = {
